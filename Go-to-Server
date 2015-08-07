@@ -13,7 +13,7 @@ do
 		password="$pass"
 		superpass="$supass"
 	fi
-done < list
+done < Server-List
 echo -n "$password" | xclip
 echo -n "$superpass" | xclip -selection clipboard
 ssh "$username@$ipaddress"
