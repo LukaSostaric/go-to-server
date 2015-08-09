@@ -19,7 +19,7 @@ do
 		superpass="$supass"
 		sucommand="$suc"
 	fi
-done < Server-List-Test
+done < "$DF"
 expect -c "
 spawn ssh -o StrictHostKeyChecking=no $username@$ipaddress
 expect \"*assword\"
@@ -32,4 +32,3 @@ if {{$2}=={root}} {
 }
 interact
 "
-exit 0
