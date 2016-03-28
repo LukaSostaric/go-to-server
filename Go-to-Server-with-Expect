@@ -10,7 +10,7 @@ if [ $? -eq 127 ] ; then
 	echo "Expect is not installed on your system! Terminating..."
 	exit 1
 fi
-while IFS=";" read name ipa uname pass supass suc
+while IFS=";" read name ipa uname pass supass suc opt
 do
 	if [ "$name" = "$1" ] ; then
 		ipaddress="$ipa"
@@ -18,10 +18,16 @@ do
 		password="$pass"
 		superpass="$supass"
 		sucommand="$suc"
+		options="$opt"
 	fi
 done < "$DF"
-expect -c "
-spawn ssh -o StrictHostKeyChecking=no $username@$ipaddress
+echo "#/usr/bin/expect -f
+trap {
+ set rows [stty rows]
+ set cols [stty columns]
+ stty rows \$rows columns \$cols < \$spawn_out(slave,name)
+} WINCH
+spawn ssh "$options" -o StrictHostKeyChecking=no $username@$ipaddress
 expect \"*assword\"
 send -- \"$password\r\"
 if {{$2}=={root}} {
@@ -30,5 +36,6 @@ if {{$2}=={root}} {
 	expect \"*assword\"
 	send -- \"$superpass\r\"
 }
-interact
-"
+interact" > /tmp/.Go-to-Server-Winch
+expect -f /tmp/.Go-to-Server-Winch
+rm /tmp/.Go-to-Server-Winch

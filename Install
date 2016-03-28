@@ -55,7 +55,7 @@ do
 			fi
 	fi
 done
-variant=2
+variant=1
 loop=1
 while [ $loop -eq 1 ]
 do
