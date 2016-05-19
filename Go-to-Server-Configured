@@ -1,4 +1,4 @@
-source "$DESTINATION/Parse-Config-File" "$CONFIGURATION"
+source "$CONFIGURATION"
 if [ $VARIANT -eq 1 ] && [ -n "$2" ] ; then
 	echo "This program is not configured to take the second argument \"$1\"!"
 	echo "Terminating..."

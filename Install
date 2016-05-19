@@ -85,7 +85,7 @@ cdirectory="${configuration:0:position}"
 mkdir -p "$ddirectory"
 mkdir -p "$cdirectory"
 cp Go-to-Server Go-to-Server-Configured\
-	Go-to-Server-with-Expect Parse-Config-File "$ddirectory"
+	Go-to-Server-with-Expect "$ddirectory"
 cat Server-List > "$datafile"
 echo "DF="$datafile" ## The path to a"\
 	"file with server information" > $configuration
