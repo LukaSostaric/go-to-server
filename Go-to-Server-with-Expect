@@ -21,14 +21,22 @@ do
 		options="$opt"
 	fi
 done < "$DF"
-echo "#/usr/bin/expect -f
+
+if [ -z "$username" ] || [ -z "$ipaddress" ] ; then
+
+        echo "Unknown server specified. Terminating..."
+        exit 1
+
+fi
+
+echo "#!/usr/bin/expect
 trap {
  set rows [stty rows]
  set cols [stty columns]
  stty rows \$rows columns \$cols < \$spawn_out(slave,name)
 } WINCH
 spawn ssh "$options" -o StrictHostKeyChecking=no $username@$ipaddress
-expect \"*assword\"
+expect -timeout -1 \"*assword\"
 send -- \"$password\r\"
 if {{$2}=={root}} {
 	expect \"*\$*\"
@@ -36,6 +44,7 @@ if {{$2}=={root}} {
 	expect \"*assword\"
 	send -- \"$superpass\r\"
 }
-interact" > /tmp/.Go-to-Server-Winch
-expect -f /tmp/.Go-to-Server-Winch
-rm /tmp/.Go-to-Server-Winch
+interact" > "/tmp/.Go-to-Server-Winch-$(whoami)"
+chmod 700 "/tmp/.Go-to-Server-Winch-$(whoami)"
+expect -f "/tmp/.Go-to-Server-Winch-$(whoami)"
+rm -f "/tmp/.Go-to-Server-Winch-$(whoami)"

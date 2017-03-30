@@ -61,7 +61,7 @@ while [ $loop -eq 1 ]
 do
 	echo "1) Program with Xclip"
 	echo "2) Program with Expect"
-	echo -n "Program Variant (2): "
+	echo -n "Program Variant (1): "
 	read input
 	if [ -z "$input" ] ; then
 		input=$variant
@@ -86,7 +86,9 @@ mkdir -p "$ddirectory"
 mkdir -p "$cdirectory"
 cp Go-to-Server Go-to-Server-Configured\
 	Go-to-Server-with-Expect "$ddirectory"
+if [ ! -f "$datafile" ] ; then
 cat Server-List > "$datafile"
+fi
 echo "DF="$datafile" ## The path to a"\
 	"file with server information" > $configuration
 echo "VARIANT=$variant ## Variant of the program to run" >> $configuration
