@@ -6,8 +6,11 @@ Installing `go-to-server` is a breeze: Unpack the `go-to-server.tar.gz` archive 
 The installation script sets up everything that is necessary for the `go-to-server` script to be run in a "standard Linux way". Use the template `server-list` included in this package to enter your server credentials. To connect to a server with credentials located in the data file, type `go-to-server "server-name" ["root"]`. If you chose the Expect version of the script, it is possible to pass "root" as the second parameter. Please note that the `root` parameter is optional; it is used for logging in as `root` automatically through the ordinary user.
 ## Copying Files
 The installation script also installs the tools for copying files between the user's machine and the server or vice-versa. To copy files/directories from your machine to a server `server-1`, use the following command:
+
     copy-to-server server-1 /from/my/machine/dir /to/server/dir
+
 To copy files/directories from a server `server-1` to your machine, enter the following:
+
     copy-from-server server-1 /from/server/dir /to/my/machine/dir
 # Data File Format Explanation
     Server Name;IP Address;Username;Password;Root Password;Command for Logging in As a Superuser;SSH Options;SCP Options
