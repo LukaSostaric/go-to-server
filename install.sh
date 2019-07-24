@@ -122,3 +122,7 @@ ln -s "$ddirectory/go-to-server-configured.sh"\
     "$bindir/copy-from-server" 2> /dev/null
 ln -s "$ddirectory/go-to-server-configured.sh"\
     "$bindir/copy-to-server" 2> /dev/null
+if [ $? -eq 0 ] ; then
+    echo "  Done. The script has been installed successfully."
+    echo "  Use the file $datafile as a template for entering your credentials."
+fi

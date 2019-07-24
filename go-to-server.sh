@@ -25,5 +25,6 @@ fi
 
 echo -n "$password" | xclip
 echo -n "$superpass" | xclip -selection clipboard
-echo "Connecting..."
+echo "  Connecting..."
+echo "  Use '$sucommand' for root access."
 ssh $options "$username@$ipaddress"
