@@ -1,14 +1,62 @@
 #!/bin/bash
+# Function definitions
+function addSlash() {
+local path="$1"
+local lc=""
+lc=$(lp=$((${#path} - 1));echo ${path:lp:lp})
+if [ "$lc" != "/" ] ; then
+    path="$path/"
+fi
+echo "$path"
+}
 function checkSuper() {
     local user="$1"
     local path="$2"
     if [ "$user" != "root" ] && [ $(echo "$path" \
             | grep -c "$HOME") -eq 0 ] ; then
-        echo -n "Error: You're not a superuser, so the path has to "
-        echo "be in your home directory: $HOME/somedir"
-        exit 1
+        echo -n "  Error: You're not a superuser, so the path has to " 1>&2
+        echo "be in your home directory: $HOME/somedir" 1>&2
+        return 1
     fi
+    return 0
 }
+function readInput() {
+local prompt="$1"
+local dir="$2" # Whether to check directory paths (1 or 0)
+local default="$3"
+local user="$4"
+while true
+do
+    read -p "$prompt" value
+    if [ -z "$value" ] ; then
+        value="$default"
+    fi
+    checkSuper "$user" "$value"
+    if [ $? -eq 0 ] ; then
+        if [ $dir -eq 1 ] ; then
+            if [ -n "$value" ] ; then
+                value=$(addSlash "$value")
+            else
+                value="$(addSlash "$default")"
+            fi
+            break
+        else
+            lc=$(lp=$((${#value} - 1));echo ${value:lp:1})
+            if [ "$lc" = "/" ] ; then
+                echo "  Invalid file path. Please try again." 1>&2
+            else
+                break
+            fi
+        fi
+    fi
+done
+if [ -n "$value" ] ; then
+    echo "$value"
+else
+    echo "$default"
+fi
+}
+# Script Start
 user=$(whoami)
 if [ $user = "root" ] ; then
     destination="/opt/go-to-server/"
@@ -21,72 +69,27 @@ else
     datafile="$HOME/.go-to-server/server-list"
     bindir="$HOME/.local/bin"
 fi
-echo -n "Destination Directory ($destination): "
-read input
-if [ -n "$input" ] ; then
-    destination="$input"
-fi
-lc=$(lp=$((${#destination} - 1));echo ${destination:lp:lp})
-if [ "$lc" != "/" ] ; then
-    destination="$destination/"
-fi
-checkSuper "$user" "$destination"
-echo -n "Configuration File ($configuration): "
-read input
-if [ -n "$input" ] ; then
-    last="$input"
-fi
-loop=1
-while [ $loop -eq 1 ]
-do
-    lc=$(lp=$((${#configuration} - 1));echo ${configuration:lp:1})
-    if [ "$lc" = "/" ] ; then
-        echo "Invalid file path. Please try again."
-        echo -n "Configuration File ($configuration): "
-        read input
-        if [ -in "$input" ] ; then
-            last="$input"
-        fi
-    else
-        loop=0
-        if [ -n "$last" ] ; then
-            configuration="$last"
-        fi
-    fi
-    checkSuper "$user" "$configuration"
-done
-loop=1
-while [ $loop -eq 1 ]
-do
-    echo -n "Data File ($datafile): "
-    read input
-    lc=$(lp=$((${#input} - 1));echo ${input:lp:1})
-    if [ -n "$input" ] && [ "$lc" = "/" ] ; then
-        echo "This is not a valid data file path! Please try again!"
-    else
-            loop=0
-            if [ -n "$input" ] ; then
-                datafile="$input"
-            fi
-    fi
-    checkSuper "$user" "$datafile"
-done
+dstPrompt="  Destination directory (Default -- $destination): "
+confPrompt="  Configuration file (Default -- $configuration): "
+dfprompt="  Server list file (Default -- $datafile): "
+destination=$(readInput "$dstPrompt" 1 "$destination" "$user")
+configuration=$(readInput "$confPrompt" 0 "$configuration" "$user")
+datafile=$(readInput "$dfprompt" 0 "$datafile" "$user")
 variant=1
-loop=1
-while [ $loop -eq 1 ]
+while true
 do
-    echo "1) Program with Xclip"
-    echo "2) Program with Expect"
-    echo -n "Program Variant (1): "
+    echo "  1) Program with Xclip"
+    echo "  2) Program with Expect"
+    echo -n "  Program Variant (Default -- $variant): "
     read input
     if [ -z "$input" ] ; then
         input=$variant
     fi
     if [ "$input" = "1" ] || [ "$input" = "2" ] ; then
-        loop=0
         if [ -n "$input" ] ; then
             variant=$input
         fi
+        break
     else
         echo "Invalid choice. It can be either 1 or 2."
     fi
@@ -94,15 +97,15 @@ done
 position="$(echo "$destination" | grep -Fob "/"\
     | tail -1 | cut -d ":" -f 1-1)"
 ddirectory="${destination:0:position}"
-position="$(echo "$configuration" | grep -Fob "/"\
-  | tail -1 | cut -d ":" -f 1-1)"
+position="$(echo "$configuration" | grep -Fob "/" | tail -1 \
+    | cut -d ":" -f 1-1)"
 position=$(($position + 1))
 cdirectory="${configuration:0:position}"
 mkdir -p "$ddirectory"
 mkdir -p "$cdirectory"
 mkdir -p "$bindir"
-cp go-to-server.sh go-to-server-configured.sh\
-    go-to-server-with-expect.sh "$ddirectory"
+cp go-to-server.sh go-to-server-configured.sh go-to-server-with-expect.sh\
+    copy-from-to-server.sh "$ddirectory"
 if [ ! -f "$datafile" ] ; then
     cat server-list > "$datafile"
 fi
@@ -115,3 +118,7 @@ echo "$(echo "#!/bin/bash";echo "DESTINATION=\"$ddirectory\"";\
     | cat > "$ddirectory/go-to-server-configured.sh"
 ln -s "$ddirectory/go-to-server-configured.sh"\
     "$bindir/go-to-server" 2> /dev/null
+ln -s "$ddirectory/go-to-server-configured.sh"\
+    "$bindir/copy-from-server" 2> /dev/null
+ln -s "$ddirectory/go-to-server-configured.sh"\
+    "$bindir/copy-to-server" 2> /dev/null

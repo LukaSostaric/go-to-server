@@ -1,13 +1,12 @@
 #!/bin/bash
 echo "Test" | xclip 2> /dev/null
 if [ $? -eq 127 ] ; then
-    echo "Xclip is not installed on your system! Terminating..."
+    echo "  Error: Xclip is not installed on your system!"
     exit 1
 fi
-while IFS=";" read name ipa uname pass supass suc opt
+while IFS=";" read name ipa uname pass supass suc opt scpopt
 do
     if [ "$name" = "$1" ] ; then
-        servername="$name"
         ipaddress="$ipa"
         username="$uname"
         password="$pass"
@@ -19,7 +18,7 @@ done < "$DF"
 
 if [ -z "$username" ] || [ -z "$ipaddress" ] ; then
 
-        echo "Unknown server specified. Terminating..."
+        echo "  Error: Unknown server '$1'!"
         exit 1
 
 fi

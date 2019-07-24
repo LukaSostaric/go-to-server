@@ -1,16 +1,16 @@
 #!/bin/bash
 if [ -n "$2" ] ; then
     if [ "$2" != "root" ] ; then
-        echo "Invalid argument \"$2\"! Terminating..."
+        echo "  Error: Invalid argument \"$2\"!"
         exit 2
     fi
 fi
 echo "Test" | expect 2> /dev/null
 if [ $? -eq 127 ] ; then
-    echo "Expect is not installed on your system! Terminating..."
+    echo "  Error: Expect is not installed on your system!"
     exit 1
 fi
-while IFS=";" read name ipa uname pass supass suc opt
+while IFS=";" read name ipa uname pass supass suc opt scpopt
 do
     if [ "$name" = "$1" ] ; then
         ipaddress="$ipa"
@@ -24,7 +24,7 @@ done < "$DF"
 
 if [ -z "$username" ] || [ -z "$ipaddress" ] ; then
 
-        echo "Unknown server specified. Terminating..."
+        echo "  Error: Unknown server '$1'!"
         exit 1
 
 fi
