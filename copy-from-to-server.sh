@@ -7,17 +7,13 @@ if [ $? -eq 127 ] ; then
     echo "  Error: SSHPass is not installed on your system!"
     exit 1
 fi
-if [ $# -gt 4 ] ; then
-    echo "  Error: Too many arguments!"
-    echo "  Usage: $0 <server-name> <path-1> <path-2>"
-fi
 while IFS=";" read name ipa uname pass supass suc opt scpopt
 do
     if [ "$name" = "$1" ] ; then
         ipaddress="$ipa"
         username="$uname"
-        password="$pass"
-        superpass="$supass"
+        password="$(echo -n "$pass" | base64 -d)"
+        superpass="$(echo -n "$supass" | base64 -d)"
         sucommand="$suc"
         options="$opt"
         scpoptions="$scpopt"

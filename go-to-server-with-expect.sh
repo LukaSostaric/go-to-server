@@ -15,8 +15,8 @@ do
     if [ "$name" = "$1" ] ; then
         ipaddress="$ipa"
         username="$uname"
-        password="$pass"
-        superpass="$supass"
+        password="$(echo -n "$pass" | base64 -d)"
+        superpass="$(echo -n "$supass" | base64 -d)"
         sucommand="$suc"
         options="$opt"
     fi

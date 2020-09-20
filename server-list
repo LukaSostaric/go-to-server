@@ -1,1 +1,1 @@
-server-1;192.168.1.10;jdoe;jdoe-password;jdoe-root-password;su -;-p 2233;-P 2233
+server-1;192.168.1.10;jdoe;base64-encoded-jdoe-password;base64-encoded-jdoe-root-password;su -;-p 2233;-P 2233

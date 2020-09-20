@@ -9,8 +9,8 @@ do
     if [ "$name" = "$1" ] ; then
         ipaddress="$ipa"
         username="$uname"
-        password="$pass"
-        superpass="$supass"
+        password="$(echo -n "$pass" | base64 -d)"
+        superpass="$(echo -n "$supass" | base64 -d)"
         sucommand="$suc"
         options="$opt"
     fi
@@ -25,6 +25,8 @@ fi
 
 echo -n "$password" | xclip
 echo -n "$superpass" | xclip -selection clipboard
-echo "  Connecting..."
 echo "  Use '$sucommand' for root access."
+echo "  You can paste your password using Shift + Insert."
+echo "  Paste the superuser (root) password with Ctrl + Shift + V."
+echo "  Connecting..."
 ssh $options "$username@$ipaddress"
