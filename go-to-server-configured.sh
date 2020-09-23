@@ -1,6 +1,3 @@
-#!/bin/bash
-DESTINATION="/home/luka/.go-to-server"
-CONFIGURATION="/home/luka/.go-to-server/configuration"
 source "$CONFIGURATION"
 if [ $(echo "$0" | grep -c "copy-from-server") -eq 1 ] ; then
     if [ $# -ne 3 ] ; then
