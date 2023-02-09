@@ -7,7 +7,7 @@ if [ $? -eq 127 ] ; then
     echo "  Error: SSHPass is not installed on your system!"
     exit 1
 fi
-while IFS=";" read name ipa uname pass supass suc opt scpopt
+while IFS=";" read name ipa uname pass supass suc opt scpopt key
 do
     if [ "$name" = "$1" ] ; then
         ipaddress="$ipa"
@@ -17,6 +17,9 @@ do
         sucommand="$suc"
         options="$opt"
         scpoptions="$scpopt"
+        assword=assword
+        [ -n "$key" ] && key="-i $key" && assword=passphrase
+        break
     fi
 done < "$DF"
 
@@ -29,10 +32,10 @@ fi
 
 echo "Connecting..."
 if [ "$4" = "copy-to" ] ; then
-    sshpass -p "$password" scp $scpoptions -r "$2" "$username@$ipaddress:$3"
+    sshpass -P$assword -p "$password" scp $key $scpoptions -r "$2" "$username@$ipaddress:$3"
     status=$?
 elif [ "$4" = "copy-from" ] ; then
-    sshpass -p "$password" scp $scpoptions -r "$username@$ipaddress:$2" "$3"
+    sshpass -P$assword -p "$password" scp $key $scpoptions -r "$username@$ipaddress:$2" "$3"
     status=$?
 fi
 
