@@ -30,8 +30,10 @@ The last two fields can be used to add SSH and SCP options respectively. For exa
 
 Replace the values `jdoe-password` and `jdoe-root-password` with the values obtained using the commands given above.
     
-    server-1;1.2.3.4;jdoe;jdoe-password;jdoe-root-password;su -;-p 2233;-P 2233
+    server-1;1.2.3.4;jdoe;jdoe-password;jdoe-root-password;su -;-p 2233;-P 2233;ssh-private-key-path
 
 The final row would look as follows...
 
-    server-1;1.2.3.4;jdoe;amRvZS1wYXNzd29yZA==;amRvZS1yb290LXBhc3N3b3Jk;su -;-p 2233;-P 2233
+    server-1;1.2.3.4;jdoe;amRvZS1wYXNzd29yZA==;amRvZS1yb290LXBhc3N3b3Jk;su -;-p 2233;-P 2233;/home/user/.ssh/id_rsa
+
+The SSH private key path is optional: If you need to authenticate using an SSH private key, you can specify its path as the last value.
